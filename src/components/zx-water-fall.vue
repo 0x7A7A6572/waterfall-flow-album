@@ -5,13 +5,13 @@
         <el-image
           :src="item.src"
           :preview-src-list="artssrc"
-          :initial-index="_index + (column * index)"
+          :initial-index="_index + column * index"
           loading="lazy"
         />
         <div class="zx-water-fall__card__desc">
-          <span class="__desc_title">{{item.title}}</span>
-           <span class="__desc_summary">{{item.summary}}</span>
-            <span class="__desc_date">{{item.date}}</span>
+          <span class="__desc_title">{{ item.title }}</span>
+          <span class="__desc_summary">{{ item.summary }}</span>
+          <span class="__desc_date">{{ item.date }}</span>
         </div>
       </el-card>
     </el-col>
@@ -24,8 +24,8 @@ import { ElImage } from "element-plus";
 export default {
   data() {
     return {
-        artsGroup: groupByColumn(this.arts, this.column),
-    }
+      artsGroup: groupByColumn(this.arts, this.column),
+    };
   },
   props: {
     arts: {
@@ -53,11 +53,11 @@ function groupByColumn(array, column) {
   //console.log(array.length,);
   while (indexCount < array.length) {
     for (let i = 0; i < column; i++) {
-       arr[i].push(array[indexCount]);
-            indexCount++;
-       if(indexCount  >= array.length){
+      arr[i].push(array[indexCount]);
+      indexCount++;
+      if (indexCount >= array.length) {
         break;
-       }
+      }
     }
   }
   // console.log("arr:",arr);
@@ -85,17 +85,57 @@ function groupByColumn(array, column) {
 // }
 </script>
 <style>
+.zx-water-fall {
+    flex-wrap: unset !important;
+}
+.zx-water-fall__card {
+  border-bottom-color: #4499ff !important;
+  /* vertical-align: top;
+  opacity: 1; */
+  border-bottom-style: inset !important;
+  border-bottom-width: 5px !important;
+  /* border-radius: 3px; */
+}
+
 .zx-water-fall__card .el-card__body {
   height: fit-content;
   padding: 5px;
 }
-.zx-water-fall__card .__desc_title{
-  font-weight:bold;
+.zx-water-fall__card .__desc_title {
+  font-weight: bold;
 }
-.zx-water-fall__card .__desc_summary{
-  font-size:0.8em;
+.zx-water-fall__card .__desc_summary {
+  color: gray;
+  font-size: 0.5em;
+  flex: 1;
+  text-align: left;
 }
-.zx-water-fall__card .__desc_date{
-  font-size:0.5em;
+.zx-water-fall__card .__desc_date {
+  font-size: 0.8em;
+  font-weight: bold;
+  color: #4499ff;
 }
+span.__desc_summary::before {
+  content: '"';
+  font-size: 1em;
+  font-weight: bold;
+}
+span.__desc_summary::after {
+  content: '"';
+  font-size: 1em;
+  font-weight: bold;
+}
+.zx-water-fall__card__desc::before {
+  content: "|";
+  font-weight: bold;
+  color: #4499ff;
+}
+.zx-water-fall__card__desc {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* .el-image__inner {
+
+} */
 </style>
