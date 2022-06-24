@@ -1,11 +1,17 @@
 <template>
   <el-row :gutter="0" id="_zx_water_fall" class="zx-water-fall">
-    <el-col :span="24 / column" v-for="(_item, _index) in artsGroup" :key="_item">
+    <el-col
+      class="zx-water-fall__col"
+      :span="24 / column"
+      v-for="(_item, _index) in artsGroup"
+      :key="_item"
+    >
       <el-card class="zx-water-fall__card" v-for="(item, index) in _item" :key="item">
         <el-image
           :src="item.src"
           :preview-src-list="artssrc"
           :initial-index="_index + column * index"
+          :preview-teleported="true"
           loading="lazy"
         />
         <div class="zx-water-fall__card__desc">
@@ -37,6 +43,19 @@ export default {
     column: {
       type: Number,
     },
+  },
+  mounted() {
+    // window.onload=function(){
+    // let imgss = document.querySelectorAll("#loadimgss");
+    // window.mysize=[];
+    // for(let index in imgss){
+    //   imgss[index].onload=()=>{
+    //   console.log("我加载完成了！",imgss[index].naturalHeight,imgss[index].naturalWidth)
+    //    window.mysize.push({width:imgss[index].naturalWidth,height:imgss[index].naturalHeight})
+    //   }
+    // }
+    // console.log( window.mysize)
+    // }
   },
   methods: {},
   components: {
@@ -86,8 +105,12 @@ function groupByColumn(array, column) {
 </script>
 <style>
 .zx-water-fall {
-    flex-wrap: unset !important;
+  flex-wrap: unset !important;
 }
+.zx-water-fall__col {
+  flex: 1;
+}
+
 .zx-water-fall__card {
   border-bottom-color: #4499ff !important;
   /* vertical-align: top;
@@ -96,6 +119,15 @@ function groupByColumn(array, column) {
   border-bottom-width: 5px !important;
   /* border-radius: 3px; */
 }
+.zx-water-fall__card:hover {
+  transform: scale(1.5);
+  position: relative;
+  z-index: 1;
+}
+/* .zx-water-fall__card:active {
+  position: unset;
+  z-index: 0;
+} */
 
 .zx-water-fall__card .el-card__body {
   height: fit-content;

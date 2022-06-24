@@ -56,8 +56,27 @@
       >
       </zx-water-fall
     ></el-tab-pane>
+    <!-- <el-tab-pane name="five">
+      <template #label>
+        <span class="custom-tabs-label">
+          <span>测<br />试 </span>
+        </span>
+      </template>
+      <zx-water-fall-skeleton
+        :artssrc="onlySrc.photography"
+        :arts="artslow.photography"
+        :column="autoColumn"
+      ></zx-water-fall-skeleton>
+    </el-tab-pane> -->
   </el-tabs>
-  <el-affix class="el-affix__parent" position="bottom" :offset="20">
+  <zx-footer
+    owner="zzerX"
+    ownerlink="https://zzerx.cn"
+    icp="45010502000772"
+    email="zzerx@qq.com"
+  ></zx-footer>
+
+  <el-affix class="el-affix__parent" position="bottom" :offset="10">
     <img class="el-affix__img" :src="imgs.exit" @click="sidebarShow" />
   </el-affix>
 </template>
@@ -65,35 +84,22 @@
 <script>
 import { toRaw } from "@vue/reactivity";
 import zxWaterFall from "./components/zx-water-fall.vue";
+import zxFooter from "./components/zx-footer.vue";
+
+// import zxWaterFallSkeleton from "./components/zx-water-fall-skeleton.vue";
 import indexedDBUtil from "./utils/indexedDBUtil.js";
+import imgData from "./utils/imgData.js";
 import { ElMessage } from "element-plus";
 // import { Expand } from "@element-plus/icons-vue";
 // import img_inclined from "@/assets/Inclined.png";
 import img_menu from "@/assets/menu.png";
 import img_exit from "@/assets/exit.png";
-
+//  console.log(imgData)
 // import img_ollwall from "@/assets/ollwall.png";
 // import img_photography from "@/assets/photography.png";
 // import img_pixel from "@/assets/pixel.png";
 // import img_illustration from "@/assets/illustration.png";
-let titleArry = {
-  photography: ["亭子码头", "酷酷的猫咪", "电塔", "编织帽", "无题", "阳光早餐", "百盛"],
-  illustration: [],
-  pixel_painting: [],
-  wall_painting: [],
-};
-let summaryArray = {
-  photography: ["夜景"],
-  illustration: [],
-  pixel_painting: [],
-  wall_painting: [],
-};
-let dataArray = {
-  photography: ["2021/05/03", "2020/04/09"],
-  illustration: [],
-  pixel_painting: [],
-  wall_painting: [],
-};
+
 export default {
   name: "App",
   data() {
@@ -106,9 +112,10 @@ export default {
         photography: creatArtsName(
           "photography",
           57,
-          titleArry.photography,
-          summaryArray.photography,
-          dataArray.photography,
+          imgData.titleArry.photography,
+          imgData.summaryArray.photography,
+          imgData.dataArray.photography,
+          imgData.imgSize.photography,
           true
         ),
       },
@@ -116,9 +123,10 @@ export default {
         illustration: creatArtsName(
           "illustration",
           19,
-          titleArry.illustration,
-          summaryArray.illustration,
-          dataArray.illustration
+          imgData.titleArry.illustration,
+          imgData.summaryArray.illustration,
+          imgData.dataArray.illustration,
+          imgData.imgSize.illustration
         ),
         // oil_painting: creatArtsName(
         //   "oil_painting",
@@ -127,20 +135,27 @@ export default {
         //   summaryArray.oil_painting,
         //   dataArray.oil_painting
         // ),
-        photography: creatArtsName("photography", 57, titleArry, summaryArray, dataArray),
+        photography: creatArtsName(
+          "photography",
+          57,
+          imgData.titleArry.photography,
+          imgData.summaryArray.photography,
+          imgData.dataArray.photography,
+          imgData.imgSize.photography
+        ),
         pixel_painting: creatArtsName(
           "pixel_painting",
           24,
-          titleArry.pixel_painting,
-          summaryArray.pixel_painting,
-          dataArray.pixel_painting
+          imgData.titleArry.pixel_painting,
+          imgData.summaryArray.pixel_painting,
+          imgData.dataArray.pixel_painting
         ),
         wall_painting: creatArtsName(
           "wall_painting",
           9,
-          titleArry.wall_painting,
-          summaryArray.wall_painting,
-          dataArray.wall_painting
+          imgData.titleArry.wall_painting,
+          imgData.summaryArray.wall_painting,
+          imgData.dataArray.wall_painting
         ),
       },
       onlySrc: {
@@ -198,6 +213,8 @@ export default {
   },
   components: {
     zxWaterFall,
+    zxFooter,
+    // zxWaterFallSkeleton,
   },
   mounted() {
     let db;
@@ -245,22 +262,23 @@ export default {
       /**success */
       (event) => {
         db = event.target.result;
-       // console.log(event, db);
+        // console.log(event, db);
         if (db.objectStoreNames.length == 0) {
           /**数据库空表 */
         } else {
           /**数据库已存在表 */
-           db.transaction(["photography"], "readonly")
+          db
+            .transaction(["photography"], "readonly")
             .objectStore("photography")
             // .index("sex")
-            .openCursor() //条件查询
-            .onsuccess = function (e) {
+            .openCursor().onsuccess = function (e) {
+            //条件查询
             //成功执行回调
             var cursor = e.target.result;
             if (cursor) {
               //如果存在
-              console.info(cursor.value)
-             // newArr.push(cursor);
+              //  console.info(cursor.value)
+              // newArr.push(cursor);
               cursor.continue(); //继续下一个
             }
           };
@@ -280,7 +298,7 @@ export default {
         // 设置 autoIncrement 标志为 true 来创建一个名为 names 的对象仓库
         objStore = db.createObjectStore("photography", { autoIncrement: true });
         objStore.createIndex("src", "src", { unique: true });
-        objStore.transaction.oncomplete = (event) => {
+        objStore.transaction.oncomplete = (/*event*/) => {
           // 将数据保存到新创建的对象仓库
           objStore = db
             .transaction("photography", "readwrite")
@@ -312,7 +330,15 @@ export default {
   },
   created() {},
 };
-function creatArtsName(type, max, titleArry, summaryArray, dataArray, isLowImg) {
+function creatArtsName(
+  type,
+  max,
+  titleArry,
+  summaryArray,
+  dataArray,
+  sizeArray,
+  isLowImg
+) {
   let arts = [];
 
   // if (
@@ -323,17 +349,24 @@ function creatArtsName(type, max, titleArry, summaryArray, dataArray, isLowImg) 
   //   summaryArray.length == dataArray.length
   // ) {
   let path = isLowImg ? "./artslow/" : "./art/";
+  if (sizeArray == null) {
+    sizeArray = [];
+  }
   for (let i = 0; i < max; i++) {
     // console.log(typeof titleArry[i], titleArry[i], type, i);
     titleArry[i] = titleArry[i] == undefined ? "Title" : titleArry[i];
     summaryArray[i] = summaryArray[i] == undefined ? "Summary..." : summaryArray[i];
     dataArray[i] = dataArray[i] == undefined ? "????/??/??" : dataArray[i];
+    if (sizeArray[i] == undefined) {
+      sizeArray[i] = { width: 400, height: 500 };
+    }
     let artobj = {
       src: path + type + "/" + type + (i + 1) + ".png",
       title: titleArry[i],
       summary: summaryArray[i],
       date: dataArray[i],
       class: type,
+      size: sizeArray[i],
     };
     arts.push(artobj);
   }
@@ -367,6 +400,17 @@ function creatArtsSrc(type, max) {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+/**居中对齐 */
+.el-tabs__content {
+  margin: 0 auto;
+  width: 90%;
+  overflow: visible !important;
+}
+@media screen and (max-width: 600px) {
+  .el-tabs__content {
+    width: 100%;
+  }
 }
 .el-image {
   display: block;
